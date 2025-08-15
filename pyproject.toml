@@ -13,6 +13,7 @@ classifiers = [
 
 [tool.maturin]
 features = ["pyo3/extension-module"]
+manifest-path = "rust/vortex_core/Cargo.toml"
 # The name of the rust crate to be compiled
 # This should be located at `nexa_vortex/vortex_core`
 module-name = "nexa_vortex._vortex_core"
