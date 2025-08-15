@@ -1,8 +1,18 @@
+[build-system]
+requires = ["maturin>=1.0,<2.0"]
+build-backend = "maturin"
+
 [project]
 name = "nexa-vortex"
 version = "0.1.0"
-description = "Add your description here"
-requires-python = ">=3.10"
-dependencies = [
-    "maturin>=1.0",
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Rust",
+    "Programming Language :: Python :: 3",
 ]
+
+[tool.maturin]
+features = ["pyo3/extension-module"]
+# The name of the rust crate to be compiled
+# This should be located at `nexa_vortex/vortex_core`
+module-name = "nexa_vortex._vortex_core"
