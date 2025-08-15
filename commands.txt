@@ -1,0 +1,10 @@
+mkdir rust
+mkdir python
+move nexa_vortex\vortex_core rust\
+move nexa_vortex python\
+
+# For PowerShell or Linux/macOS:
+mkdir rust
+mkdir python
+mv nexa_vortex/vortex_core rust/
+mv nexa_vortex python/
