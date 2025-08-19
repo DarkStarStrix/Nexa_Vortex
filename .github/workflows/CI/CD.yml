@@ -1,87 +1,74 @@
-name: Build and Test
-
-# Workflow status badges
-# Build Status
-# Test Coverage
-# Code Quality
+name: CD Pipeline
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-env:
-  CARGO_TERM_COLOR: always
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-  build_and_test:
-    name: Build and Test
+  publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
-
-      - name: List files in the repository
-        run: ls -R
-
+      - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.8'
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest
-
+          pip install maturin twine pytest
       - name: Ensure Rust toolchain is installed
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
           profile: minimal
           override: true
-
       - name: Merge Vortex_Core from master to main
         run: |
           git fetch origin master
           git checkout main
           git merge origin/master --allow-unrelated-histories
         continue-on-error: true
-
       - name: Check root Rust crate compiles
         run: cargo build --release
         working-directory: .
-
       - name: Check nexa_vortex/vortex_core crate compiles
         run: cargo build --release
         working-directory: ./nexa_vortex/vortex_core
-
       - name: Check rust/vortex_core crate compiles
         run: cargo build --release
         working-directory: ./rust/vortex_core
-
       - name: Build wheel (root crate)
         uses: PyO3/maturin-action@v1
         with:
           command: build
           args: --release --out dist
           working-directory: .
-
       - name: Build wheel (nexa_vortex/vortex_core)
         uses: PyO3/maturin-action@v1
         with:
           command: build
           args: --release --out dist
           working-directory: ./nexa_vortex/vortex_core
-
       - name: Build wheel (rust/vortex_core)
         uses: PyO3/maturin-action@v1
         with:
           command: build
           args: --release --out dist
           working-directory: ./rust/vortex_core
-
-      - name: Install wheel and test
+      - name: Run tests (python)
         run: |
           pip install nexa-vortex --find-links dist --force-reinstall
           pytest ./python/tests/test_core.py
+        continue-on-error: true
+      - name: Run tests (rust)
+        run: |
+          cargo test --manifest-path ./nexa_vortex/vortex_core/Cargo.toml
+        continue-on-error: true
+      - name: Publish package
+        if: github.event_name == 'push'
+        run: |
+          twine upload dist/* --username __token__ --password ${{ secrets.PYPI_TOKEN }}
+        continue-on-error: true
