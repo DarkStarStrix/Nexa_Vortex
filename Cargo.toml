@@ -16,3 +16,15 @@ features = ["pyo3/extension-module"]
 # The name of the rust crate to be compiled
 # This should be located at `nexa_vortex/vortex_core`
 module-name = "nexa_vortex._vortex_core"
+
+[package]
+name = "nexa-vortex"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "nexa_vortex"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.20.0", features = ["extension-module"] }
