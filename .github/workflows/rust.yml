@@ -52,34 +52,12 @@ jobs:
         run: cargo build --release
         working-directory: .
 
-      - name: Check nexa_vortex/vortex_core crate compiles
-        run: cargo build --release
-        working-directory: ./nexa_vortex/vortex_core
-
-      - name: Check rust/vortex_core crate compiles
-        run: cargo build --release
-        working-directory: ./rust/vortex_core
-
       - name: Build wheel (root crate)
         uses: PyO3/maturin-action@v1
         with:
           command: build
           args: --release --out dist
           working-directory: .
-
-      - name: Build wheel (nexa_vortex/vortex_core)
-        uses: PyO3/maturin-action@v1
-        with:
-          command: build
-          args: --release --out dist
-          working-directory: ./nexa_vortex/vortex_core
-
-      - name: Build wheel (rust/vortex_core)
-        uses: PyO3/maturin-action@v1
-        with:
-          command: build
-          args: --release --out dist
-          working-directory: ./rust/vortex_core
 
       - name: Install wheel and test
         run: |
